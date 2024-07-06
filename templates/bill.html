@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='enter_bill.css') }}">
+
+    <title>Bill Amount</title>
+</head>
+<body>
+    <h1>Enter Total Bill Amount</h1>
+    <form action="/payments" method="post">
+        <input type="hidden" name="num_users" value="{{ num_users }}">
+        {% for name in names %}
+            <input type="hidden" name="names" value="{{ name }}">
+        {% endfor %}
+        <label for="total_bill">Total Bill Amount:</label>
+        <input type="number" step="0.01" id="total_bill" name="total_bill" required>
+        <button type="submit">Next</button>
+    </form>
+</body>
+</html>

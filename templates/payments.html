@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='payment.css') }}">
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Enter Payments</h1>
+    <p>Each person should pay: {{ avg_amount | round(2) }}</p>
+    <form id="payment-form" action="/split" method="post">
+        <input type="hidden" name="num_users" value="{{ num_users }}">
+        <input type="hidden" name="total_bill" value="{{ total_bill }}">
+        {% for name in names %}
+            <input type="hidden" name="names" value="{{ name }}">
+        {% endfor %}
+        {% for i in range(num_users) %}
+            <label for="amount_{{ i }}">{{ names[i] }} paid:</label>
+            <input type="number" step="0.01" id="amount_{{ i }}" name="amount_{{ i }}" required>
+            <br>
+        {% endfor %}
+        <button type="submit">Split Bill</button>
+        <div id="error-message" class="error"></div>
+    </form>
+
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            const amounts = document.querySelectorAll('input[name^="amount_"]');
+            const totalBill = parseFloat(document.querySelector('input[name="total_bill"]').value);
+            let totalPaid = 0;
+
+            amounts.forEach(amount => {
+                const value = parseFloat(amount.value);
+                if (value < 0) {
+                    event.preventDefault();
+                    document.getElementById('error-message').textContent = 'Amount paid cannot be negative.';
+                    return;
+                }
+                totalPaid += value;
+            });
+
+            if (totalPaid !== totalBill) {
+                event.preventDefault();
+                document.getElementById('error-message').textContent = 'The total amount paid does not equal the total bill amount.';
+            }
+        });
+    </script>
+</body>
+</html>
